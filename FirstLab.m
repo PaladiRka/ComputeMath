@@ -1,5 +1,6 @@
 pkg load symbolic;
 
+close all;
 clc;
 clear;
 
@@ -56,10 +57,10 @@ diap = linspace(LeftLimit, RightLimit, (RightLimit - LeftLimit)*100);
 
 do
     ErrorPoint = input('Введите координату Х для проверки: ');
-    if (ErrorPoint<LeftLimit || ErrorPoint > RightLimit)
+    if (ErrorPoint < LeftLimit) || (ErrorPoint > RightLimit)
         disp('error');
     endif
-until(ErrorPoint >= LeftLimit && ErrorPoint <= RightLimit);
+until(ErrorPoint >= LeftLimit) && (ErrorPoint <= RightLimit);
 
 syms x;
 
@@ -69,7 +70,7 @@ maxim = max (f(diap));
 
 wn = ones(size(ErrorPoint));
 if anser == 3
-    wn = abs(RightLimit - LeftLimit)/2^(A - 1)
+    wn = abs(RightLimit - LeftLimit)/2^(A - 1);
 else
     for i = 1 : A
         wn = wn.*(ErrorPoint .- X(i));
@@ -78,24 +79,33 @@ endif
 
 ErrorTeoretical = wn*maxim/factorial(A + 1);
 
-
 LagrangePointPolinom = LagrangPolinom(Y, X, diap);
-ErrorPointY = LagrangPolinom(Y,X,ErrorPoint);
+NewtonPointPolinom = NewtonPolinom(Y, X, diap);
 
-ErrorPractical = abs(f(ErrorPoint) - ErrorPointY);
+LagrangErrorPointY = LagrangPolinom(Y,X,ErrorPoint);
+NewtonErrorPointY = NewtonPolinom(Y,X,ErrorPoint);
 
-ans = abs(ErrorTeoretical) - abs(ErrorPractical)
+LagrangErrorPractical = abs(f(ErrorPoint) - LagrangErrorPointY);
+NewtonErrorPractical = abs(f(ErrorPoint) - NewtonErrorPointY);
 
+LagrangAns = abs(ErrorTeoretical) - abs(LagrangErrorPractical)
+NewtonAns = abs(ErrorTeoretical) - abs(NewtonErrorPractical)
 
+figure(1);
 hold on;
 grid on;
-
-
 plot(X,Y,'bo','color','b');
 plot(diap,f(diap),'color','m');
 plot(diap,LagrangePointPolinom,'color','c');
-plot(ErrorPoint,ErrorPointY,'bo','color','r');
+plot(ErrorPoint,LagrangErrorPointY,'bo','color','r');
 legend('interpolation knots','input func','LagrangePolinom','ErrorPoint');
 
-
+figure(2);
+hold on;
+grid on;
+plot(X,Y,'bo','color','b');
+plot(diap,f(diap),'color','m');
+plot(diap,NewtonPointPolinom,'color','r');
+plot(ErrorPoint,NewtonErrorPointY,'bo','color','r');
+legend('interpolation knots','input func','NewtonPolinom','ErrorPoint');
 
