@@ -91,6 +91,7 @@ NewtonErrorPractical = abs(f(ErrorPoint) - NewtonErrorPointY);
 LagrangAns = abs(ErrorTeoretical) - abs(LagrangErrorPractical)
 NewtonAns = abs(ErrorTeoretical) - abs(NewtonErrorPractical)
 
+#Графики функций
 figure(1);
 hold on;
 grid on;
@@ -104,8 +105,44 @@ figure(2);
 hold on;
 grid on;
 plot(X,Y,'bo','color','b');
-plot(diap,f(diap),'color','m');
+plot(diap,f(diap),'color','k');
 plot(diap,NewtonPointPolinom,'color','r');
 plot(ErrorPoint,NewtonErrorPointY,'bo','color','r');
 legend('interpolation knots','input func','NewtonPolinom','ErrorPoint');
+#График погрешности
+figure(3);
+hold on;
+grid on;
+plot(diap,f(diap),'color','k');
+plot(ErrorPoint,NewtonErrorPointY,'bo','color','r');
+legend('input func','ErrorPoint');
+ArrayError = ones(1,12);
+for A = 1 : 12
+    switch (anser) 
+        case 1
+            lngt = (RightLimit - LeftLimit);
+            X = LeftLimit : lngt/(A - 1) : RightLimit;
+        case 2
+            X = eye(p,1);
+            for i = 1 : A
+                do
+                    X(i) = input('x=');
+                    if (X(i) < LeftLimit) || (X(i) > RightLimit)
+                        disp('error');
+                    endif
+                until(X(i) >= LeftLimit) && (X(i) <= RightLimit);
+            endfor
+        case 3
+            H = 0 : (A - 1);
+            X = 0.5*((LeftLimit-RightLimit)*cos((2*H + 1)/A*0.5*pi) + LeftLimit + RightLimit);
+    endswitch 
+    Y = f(X);
+    NewtonPointPolinom = NewtonPolinom(Y, X, diap);
+    plot(diap,NewtonPointPolinom,'color','r');
+    NewtonErrorPointY = NewtonPolinom(Y,X,ErrorPoint);
+    ArrayError(A) = abs(f(ErrorPoint) - NewtonErrorPointY);
+endfor
 
+figure(3);
+hold on;
+grid on;
