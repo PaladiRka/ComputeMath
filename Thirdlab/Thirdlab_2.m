@@ -47,37 +47,49 @@ while (1)
         QnPolin = Qn(j)*XX.^(j - 1) + QnPolin;
     endfor
     sigma = anser(A + 2);
-% поиск точки глобального максимума
+    % поиск точки глобального максимума
     [maxim, indx] = max(abs(f(XX) - QnPolin));
-    pointChang = FNVSV(X, XX(indx));
     
-
-    
+    [leftborder, rightborder] = FNVSV(X, XX(indx));
+    if leftborder == 0
+        if anser(1)*XX(indx) > 0
+            pointChang = 1;
+        else
+            pointChang = 0;
+        endif
+    elseif leftborder == length(X)
+        if anser(leftborder)*XX(indx) > 0
+            pointChang = leftborder;
+        else
+            pointChang = rightborder;
+        endif
+    endif        
+        
     
     figure(1);
     plot(XX, f(XX), 'color', 'r');
     plot(X, QnPolin(X), 'color', 'g');
     
-    switch (pointChang)
-      case 1 : length(X): 
+    if (pointChang >= 1) and (pointChang <= length(X))
           X(pointChang) = maxim;
-      case (lenght(X) + 1) : (lenght(X) + 2):
-          for i = 1 : lenght(X) - 1
+      elseif pointChang > length(X)
+          for i = 1 : length(X) - 1
               X(i) = X(i + 1);
           endfor
-          X(lenght(X)) = maxim;
-      case (lenght(X) - 2) : (lenght(X) - 1):
-          for i = lenght(X) : -1 : 2
+          X(length(X)) = maxim;
+      elseif pointChang < 1
+          for i = length(X) : -1 : 2
               X(i) = X(i - 1);
           endfor
           X(1) = maxim;
-    endswitch
+    endif
 
     h = abs(f(XX(pointChang)) - QnPolin)
 
     if epsilon > h - abs(sigma)
         break;
     endif
+ 
 endwhile
 
 
