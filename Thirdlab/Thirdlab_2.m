@@ -77,11 +77,13 @@ while (1)
               X(i) = X(i + 1);
           endfor
           X(length(X)) = maxim;
+          pointChang = length(X);
       elseif pointChang < 1
           for i = length(X) : -1 : 2
               X(i) = X(i - 1);
           endfor
           X(1) = maxim;
+          pointChang = 1;
     endif
 
     h = abs(f(XX(pointChang)) - QnPolin)
