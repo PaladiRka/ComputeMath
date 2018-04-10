@@ -7,7 +7,7 @@ clear;
 F = input('Введите функцию: F(x)= ','s');
 f = inline(F);
 
-epsilon = 0.0001;
+epsilon = 0.001;
 
 LeftLimit = input('Введите начало промежутка: ');
 RightLimit = LeftLimit;
@@ -27,28 +27,36 @@ while A < 1
         disp('error');
     endif
 endwhile
+qwertyu = 0;
 % точки Чебышева n + 2
-H = 0 : (A + 2 - 1);  
-X = 0.5*((LeftLimit-RightLimit)*cos((2*H + 1)/(A + 2)*0.5*pi) + LeftLimit + RightLimit); 
+H = 0 : (A + 2 - 1);
+X = 0.5*((LeftLimit-RightLimit)*cos((2*H + 1)/(A + 2)*0.5*pi) + LeftLimit + RightLimit);
 while (1)
-% Формирование матрицы коэффициентов
-    one = ones(1,A+2)*(-1);
+    % Формирование матрицы коэффициентов
+    koef=[];
+    one = ones(1, A + 2)*(-1);
     for i = 1 : (A + 1)
-        koef(:, i) = X.^i; 
-        one(i) = one(i).^i;
+        koef(:, i) = X.^(i - 1); 
+        one(i) = one(i).^(i - 1);
     endfor
-    one(A + 2) = one (A + 2).^(A + 2);
+    one(A + 2) = one (A + 2).^(A + 1);
     koef(:, A + 2) = one;
-    leftexpr = f(X)';
-    anser = koef\leftexpr; 
+    %законченно
+    leftexpr_1 = f(X);
+    leftexpr = leftexpr_1';
+    anser = koef\leftexpr;
+    qwertyu = qwertyu + 1
     Qn = anser(1 : (A + 1)); % Коэффициенты многочлена
-    QnPolin = zeros(size(XX));
-    for j = 1 : length(Qn)
-        QnPolin = Qn(j)*XX.^(j - 1) + QnPolin;
-    endfor
+    NewVar = Qn(end: -1:1);
+    
     sigma = anser(A + 2);
     % поиск точки глобального максимума
-    [maxim, indx] = max(abs(f(XX) - QnPolin));
+    [maxim, indx] = max(abs(f(XX) - polyval(NewVar,XX)));
+    
+
+    plot(XX, polyval(NewVar,XX));
+    hold on;
+    plot(XX, sin(XX));
     
     [leftborder, rightborder] = FNVSV(X, XX(indx));
     if leftborder == 0
@@ -63,14 +71,10 @@ while (1)
         else
             pointChang = rightborder;
         endif
-    endif        
-        
+    endif             
     
-    figure(1);
-    plot(XX, f(XX), 'color', 'r');
-    plot(X, QnPolin(X), 'color', 'g');
     
-    if (pointChang >= 1) and (pointChang <= length(X))
+    if ((pointChang >= 1) && (pointChang <= length(X))) 
           X(pointChang) = maxim;
       elseif pointChang > length(X)
           for i = 1 : length(X) - 1
@@ -86,16 +90,9 @@ while (1)
           pointChang = 1;
     endif
 
-    h = abs(f(XX(pointChang)) - QnPolin)
+    h = abs(f(X(pointChang)) - polyval(NewVar,pointChang));
 
-    if epsilon > h - abs(sigma)
+    if epsilon > (h - abs(sigma))
         break;
     endif
- 
 endwhile
-
-
-
-
-
-
