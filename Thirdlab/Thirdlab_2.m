@@ -4,6 +4,7 @@ close all;
 clc;
 clear;
 
+
 F = input('Введите функцию: F(x)= ','s');
 f = inline(F);
 
@@ -62,6 +63,7 @@ while (1)
     XX(indx)
     % Графики %%%%%%%%
     figure(qwertyu);
+    grid on;
     hold on;
     plot(XX, polyval(NewVar,XX), 'b');
     plot(XX, f(XX), 'r');
